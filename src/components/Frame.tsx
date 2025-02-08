@@ -22,17 +22,79 @@ import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
 import { PROJECT_TITLE } from "~/lib/constants";
 
-function ExampleCard() {
+function QuizCard() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+  const totalQuestions = QUIZ_QUESTIONS.length;
+
+  const handleAnswer = (optionIndex: number, isCorrect: boolean) => {
+    setSelectedAnswer(optionIndex);
+    if (isCorrect) setScore(score + 1);
+    
+    setTimeout(() => {
+      setCurrentStep(prev => Math.min(prev + 1, totalQuestions));
+      setSelectedAnswer(null);
+    }, 1500);
+  };
+
+  const resetQuiz = () => {
+    setCurrentStep(0);
+    setScore(0);
+    setSelectedAnswer(null);
+  };
+
+  if (currentStep >= totalQuestions) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Quiz Complete! 🎉</CardTitle>
+          <CardDescription>
+            You scored {score}/{totalQuestions}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          <Label>Key Takeaways:</Label>
+          <div className="text-sm">
+            <p>✅ Do: Simple UIs, Image filters, Quizzes</p>
+            <p>🚫 Don't: Complex contracts, Databases, AI</p>
+          </div>
+          <button 
+            onClick={resetQuiz}
+            className="mt-4 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+          >
+            Try Again
+          </button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentQuestion = QUIZ_QUESTIONS[currentStep];
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome to the Frame Template</CardTitle>
-        <CardDescription>
-          This is an example card that you can customize or remove
-        </CardDescription>
+        <CardTitle>Question {currentStep + 1}/{totalQuestions}</CardTitle>
+        <CardDescription>{currentQuestion.question}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Label>Place content in a Card here.</Label>
+      <CardContent className="flex flex-col gap-2">
+        {currentQuestion.options.map((option, index) => (
+          <button
+            key={index}
+            onClick={() => handleAnswer(index, option.correct)}
+            disabled={selectedAnswer !== null}
+            className={`p-2 text-left rounded transition-colors ${
+              selectedAnswer === index
+                ? option.correct 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-red-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700'
+            }`}
+          >
+            {option.text} {option.correct ? '✅' : '❌'}
+          </button>
+        ))}
       </CardContent>
     </Card>
   );
@@ -140,7 +202,7 @@ export default function Frame() {
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-700 dark:text-gray-300">
           {PROJECT_TITLE}
         </h1>
-        <ExampleCard />
+        <QuizCard />
       </div>
     </div>
   );
