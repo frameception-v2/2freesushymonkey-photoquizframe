@@ -57,7 +57,7 @@ function QuizCard() {
           <Label>Key Takeaways:</Label>
           <div className="text-sm">
             <p>✅ Do: Simple UIs, Image filters, Quizzes</p>
-            <p>🚫 Don't: Complex contracts, Databases, AI</p>
+            <p>🚫 Don&apos;t: Complex contracts, Databases, AI</p>
           </div>
           <button 
             onClick={resetQuiz}
